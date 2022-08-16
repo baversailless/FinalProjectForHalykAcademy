@@ -1,61 +1,48 @@
 package kz.halykacademy.bookstore.entity;
-
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import javax.persistence.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "author")
 public class Author {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "patronymic_name")
     private String patronymicName;
+
+    @Column(name = "date_of_birth")
     private String dateOfBirth;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "author_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
     private List<Book> bookList;
-    private static AtomicInteger generatorId = new AtomicInteger(0);
 
-    public Author(String lastName, String firstName, String patronymicName, String dateOfBirth, List<Book> bookList){
-        this.id = generatorId.getAndIncrement();
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.patronymicName = patronymicName;
-        this.dateOfBirth = dateOfBirth;
-        this.bookList = bookList;
-    }
+    @ManyToMany()
+    @JoinTable(
+            name = "genre_author",
+            joinColumns = @JoinColumn(name = "author_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private List<Genre> genreList;
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public String getFirstName() {
-        return firstName;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public String getPatronymicName() {
-        return patronymicName;
-    }
-    public void setPatronymicName(String patronymicName) {
-        this.patronymicName = patronymicName;
-    }
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-    public List<Book> getBookList() {
-        return bookList;
-    }
-    public void setBookList(List<Book> bookList) {
-        this.bookList = bookList;
-    }
 
 }

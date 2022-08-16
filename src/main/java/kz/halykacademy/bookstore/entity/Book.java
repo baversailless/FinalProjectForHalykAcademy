@@ -1,82 +1,63 @@
 package kz.halykacademy.bookstore.entity;
 
+import lombok.*;
+
+import javax.persistence.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "book")
 public class Book {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+    @Column(name = "price")
     private int price;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
     private List<Author> authorList;
+
+    @ManyToOne
+    @JoinColumn(name = "publisher_id")
     private Publisher publisher;
+
+    @Column(name = "title")
     private String title;
+
+    @Column(name = "number_of_pages")
     private int numberOfPages;
+
+    @Column(name = "release_year")
     private int releaseYear;
-    private static AtomicInteger generatorId = new AtomicInteger(0);
 
-    public Book(int price, List<Author> authorList, Publisher publisher, String title, int numberOfPages, int releaseYear) {
-        this.id = generatorId.getAndIncrement();
-        this.price = price;
-        this.authorList = authorList;
-        this.publisher = publisher;
-        this.title = title;
-        this.numberOfPages = numberOfPages;
-        this.releaseYear = releaseYear;
-    }
+    @ManyToMany()
+    @JoinTable(
+            name = "book_genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private List<Genre> genreList;
 
-    public int getId() {
-        return id;
-    }
+    @ManyToMany(mappedBy = "bookList")
+    private List<Order> orderList;
 
-    public void setId(int id) {
+    public Book(Long id, int price, Publisher publisher, String title, int numberOfPages, int releaseYear) {
         this.id = id;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
         this.price = price;
-    }
-
-    public List<Author> getAuthorList() {
-        return authorList;
-    }
-
-    public void setAuthorList(List<Author> authorList) {
-        this.authorList = authorList;
-    }
-
-    public Publisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
         this.title = title;
-    }
-
-    public int getNumberOfPages() {
-        return numberOfPages;
-    }
-
-    public void setNumberOfPages(int numberOfPages) {
         this.numberOfPages = numberOfPages;
-    }
-
-    public int getReleaseYear() {
-        return releaseYear;
-    }
-
-    public void setReleaseYear(int releaseYear) {
         this.releaseYear = releaseYear;
     }
-
 }
