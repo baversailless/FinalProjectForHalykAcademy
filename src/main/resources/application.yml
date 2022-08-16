@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bookstore
+    username: postgres
+    password: Sa!b!i!na27
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+
+flyway:
+  clean-on-validation-error: false
+  validate-on-migrate: true
+  enabled: true
+
