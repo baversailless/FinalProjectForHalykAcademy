@@ -1,72 +1,30 @@
 package kz.halykacademy.bookstore.dto;
 
+import kz.halykacademy.bookstore.entity.Book;
+import kz.halykacademy.bookstore.entity.Genre;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthorDTO {
-    private int id;
+    private Long id;
     private String lastName;
     private String firstName;
     private String patronymicName;
     private String dateOfBirth;
-    private List<BookDTO> bookList;
-    private static AtomicInteger generatorId = new AtomicInteger(0);
+    private List<Long> bookList;
+    private Set<Long> genreList;
 
-    public AuthorDTO(String lastName, String firstName, String patronymicName, String dateOfBirth, List<BookDTO> bookList){
-        this.id = generatorId.getAndIncrement();
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.patronymicName = patronymicName;
-        this.dateOfBirth = dateOfBirth;
-        this.bookList = bookList;
-    }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getPatronymicName() {
-        return patronymicName;
-    }
-
-    public void setPatronymicName(String patronymicName) {
-        this.patronymicName = patronymicName;
-    }
-
-    public String getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public List<BookDTO> getBookList() {
-        return bookList;
-    }
-
-    public void setBookList(List<BookDTO> bookList) {
-        this.bookList = bookList;
-    }
 
 }

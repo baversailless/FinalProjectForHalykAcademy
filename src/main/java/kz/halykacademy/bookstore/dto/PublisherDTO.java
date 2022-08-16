@@ -1,43 +1,24 @@
 package kz.halykacademy.bookstore.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PublisherDTO {
-    private int id;
+    private Long id;
     private String name;
-    private List<BookDTO> bookList;
-    private static AtomicInteger generatorId = new AtomicInteger(0);
-
-    public PublisherDTO(String name, List<BookDTO> bookList){
-        this.id = generatorId.getAndIncrement();
-        this.name = name;
-        this.bookList = bookList;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<BookDTO> getBookList() {
-        return bookList;
-    }
-
-    public void setBookList(List<BookDTO> bookList) {
-        this.bookList = bookList;
-    }
+    private List<Long> bookIds;
+    private List<String> bookNames;
 
 
 }
