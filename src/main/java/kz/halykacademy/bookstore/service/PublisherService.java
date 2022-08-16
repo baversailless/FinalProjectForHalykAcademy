@@ -1,13 +1,15 @@
 package kz.halykacademy.bookstore.service;
 
+import kz.halykacademy.bookstore.dto.PublisherDTO;
 import kz.halykacademy.bookstore.entity.Publisher;
 
 import java.util.List;
 
 public interface PublisherService {
-    List<Publisher> getPublishers();
-    Publisher getPublisherById(int id);
-    void createPublisher(Publisher publisher);
-    void updatePublisher(int id, Publisher publisher);
-    void deletePublisher(int id);
+    List<PublisherDTO> getPublishers();
+    PublisherDTO getPublisherById(Long id);
+    void createPublisher(PublisherDTO publisherDTO);
+    PublisherDTO updatePublisher(PublisherDTO publisherDTO);
+    void deletePublisher(Long id);
+    List<PublisherDTO> findByName(String name);
 }
