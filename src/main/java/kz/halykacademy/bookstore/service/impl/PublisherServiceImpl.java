@@ -32,15 +32,32 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    public List<PublisherDTO> findByName(String name) {
+        List<PublisherDTO> dtoList;
+        List<Publisher> publishers = publisherRepository.findByName(name.toLowerCase());
+        if (publishers.isEmpty()){
+            throw new DataNotFoundException("NOT FOUND");
+        }
+        dtoList = publisherMapper.toPublisherDTOList(publishers);
+        return dtoList;
+    }
+
+    @Override
     public List<PublisherDTO> getPublishers() {
         List<Publisher> publishers = publisherRepository.findAll();
+        if (publishers.isEmpty()){
+            throw new DataNotFoundException("THERE ARE NO PUBLISHERS");
+        }
         return publisherMapper.toPublisherDTOList(publishers);
     }
 
     @Override
     public PublisherDTO getPublisherById(Long id) {
-        PublisherDTO publisherDTO = publisherMapper.toDTO(publisherRepository.findById(id).orElse(null));
-        return publisherDTO;
+        Publisher publisher = publisherRepository.findById(id).orElse(null);
+        if (publisher == null) {
+            throw new DataNotFoundException("THERE IS NO PUBLISHER WITH THIS ID");
+        }
+        return publisherMapper.toDTO(publisherRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -55,10 +72,17 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public PublisherDTO updatePublisher(PublisherDTO publisherDTO) {
+        if (publisherDTO.getId() == null){
+            throw new UpdateDataFailException("YOU NEED TO SPECIFY PUBLISHER ID");
+        }
+        Publisher found = publisherRepository.findById(publisherDTO.getId()).orElse(null);
+        if (found == null){
+            throw new UpdateDataFailException("THERE IS NO PUBLISHER WITH THIS ID");
+        }
+
         Publisher publisher = publisherMapper.toEntity(publisherDTO);
         publisherRepository.saveAndFlush(publisher);
         return publisherDTO;
-
     }
 
 
@@ -66,16 +90,9 @@ public class PublisherServiceImpl implements PublisherService {
     public void deletePublisher(Long id) {
         Publisher publisher = publisherRepository.findById(id).orElse(null);
         if(publisher == null){
-            throw new DataNotFoundException("There is no publisher by this id");
+            throw new DataNotFoundException("THERE IS NO PUBLISHER WITH THIS ID");
         }
         publisherRepository.deleteById(id);
     }
 
-    @Override
-    public List<PublisherDTO> findByName(String name) {
-        List<PublisherDTO> dtoList;
-        List<Publisher> bookList = publisherRepository.findByName(name.toLowerCase());
-        dtoList = publisherMapper.toPublisherDTOList(bookList);
-        return dtoList;
-    }
 }

@@ -4,6 +4,7 @@ import kz.halykacademy.bookstore.dto.GenreDTO;
 import kz.halykacademy.bookstore.entity.Genre;
 import kz.halykacademy.bookstore.exception.CreateDataFailException;
 import kz.halykacademy.bookstore.exception.DataNotFoundException;
+import kz.halykacademy.bookstore.exception.UpdateDataFailException;
 import kz.halykacademy.bookstore.mapper.GenreMapper;
 import kz.halykacademy.bookstore.repository.GenreRepository;
 import kz.halykacademy.bookstore.service.GenreService;
@@ -26,13 +27,19 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public List<GenreDTO> getGenres() {
         List<Genre> genreList = genreRepository.findAll();
+        if (genreList.isEmpty()){
+            throw new DataNotFoundException("THERE ARE NO GENRES");
+        }
         return genreMapper.toGenreDTOList(genreList);
     }
 
     @Override
     public GenreDTO getGenreById(Long id) {
-        GenreDTO genreDTO = genreMapper.toDTO(genreRepository.findById(id).orElse(null));
-        return genreDTO;
+        Genre genre = genreRepository.findById(id).orElse(null);
+        if (genre == null){
+            throw new DataNotFoundException("THERE IS NO PUBLISHER WITH THIS ID");
+        }
+        return genreMapper.toDTO(genre);
     }
 
     @Override
@@ -48,6 +55,14 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public GenreDTO updateGenre(GenreDTO genreDTO) {
+        if (genreDTO.getId() == null) {
+            throw new UpdateDataFailException("YOU NEED TE SPECIFY BOOK ID");
+        }
+        Genre found = genreRepository.findById(genreDTO.getId()).orElse(null);
+        if (found == null){
+            throw new UpdateDataFailException("THERE IS NO GENRE WITH THIS ID");
+        }
+
         Genre genre = genreMapper.toEntity(genreDTO);
         genreRepository.saveAndFlush(genre);
         return genreDTO;

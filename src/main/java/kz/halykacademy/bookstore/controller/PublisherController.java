@@ -28,85 +28,34 @@ public class PublisherController {
     }
 
     @GetMapping(value = "publisher/findByName/{name}")
-    public ResponseEntity<ResponseDTO> findByTitle(@PathVariable("name") String name){
-        ResponseDTO response = new ResponseDTO();
-        try {
-            List<PublisherDTO> listDTO = publisherService.findByName(name);
-            response.setData(listDTO);
-            response.setSuccessCode("GET ALL PUBLISHERS SUCCESS");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DataNotFoundException("PUBLISHERS NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public List<PublisherDTO> findByTitle(@PathVariable("name") String name) {
+        return publisherService.findByName(name);
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<ResponseDTO> getAllPublishers() {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            List<PublisherDTO> listDTO = publisherService.getPublishers();
-            response.setData(listDTO);
-            response.setSuccessCode("GET ALL PUBLISHERS SUCCESS");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DataNotFoundException("PUBLISHERS NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public List<PublisherDTO> getAllPublishers() {
+        return publisherService.getPublishers();
     }
 
     @GetMapping("publisher/{publisherId}")
-    public ResponseEntity<ResponseDTO> getPublisher(@PathVariable("publisherId") Long publisherId) {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            PublisherDTO dto = publisherService.getPublisherById(publisherId);
-            response.setData(dto);
-            response.setSuccessCode("GET PUBLISHER SUCCESSFULLY");
-        } catch (Exception e) {
-            throw new DataNotFoundException("PUBLISHER NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public PublisherDTO getPublisher(@PathVariable("publisherId") Long publisherId) {
+        return publisherService.getPublisherById(publisherId);
     }
 
     @PostMapping(value = "/publisher/create", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> createNewPublisher(@RequestBody PublisherDTO publisherDTO) throws CreateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
+    public void createNewPublisher(@RequestBody PublisherDTO publisherDTO){
             publisherService.createPublisher(publisherDTO);
-            response.setSuccessCode("CREATE PUBLISHER SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new CreateDataFailException("SOMETHING WENT WRONG DURING createPublisher");
-        }
-        return ResponseEntity.ok().body(response);
     }
 
 
     @PutMapping(value = "/publisher/update", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> updatePublisher(@RequestBody PublisherDTO publisherDTO) throws UpdateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            PublisherDTO dto = publisherService.updatePublisher(publisherDTO);
-            response.setData(dto);
-            response.setSuccessCode("UPDATE PUBLISHER SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new UpdateDataFailException("Something went wrong with updatePublisher");
-        }
-        return ResponseEntity.ok().body(response);
+    public PublisherDTO updatePublisher(@RequestBody PublisherDTO publisherDTO){
+        return publisherService.updatePublisher(publisherDTO);
     }
 
     @DeleteMapping("/publisher/delete/{publisherId}")
-    public ResponseEntity<ResponseDTO> deletePublisher(@PathVariable("publisherId") Long publisherId) throws DeleteDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
+    public void deletePublisher(@PathVariable("publisherId") Long publisherId) {
             publisherService.deletePublisher(publisherId);
-            response.setSuccessCode("DELETE PUBLISHER SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DeleteDataFailException("Something went wrong with deleteBook");
-        }
-        return ResponseEntity.ok().body(response);
     }
 
 }

@@ -27,71 +27,30 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @GetMapping(value = "/genre/all")
-    public ResponseEntity<ResponseDTO> getGenres() {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            List<GenreDTO> listDTO = genreService.getGenres();
-            response.setData(listDTO);
-            response.setSuccessCode("GET ALL GENRES SUCCESS");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DataNotFoundException("GENRES NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    @GetMapping(value = "/all")
+    public List<GenreDTO> getGenres() {
+           return genreService.getGenres();
     }
 
     @GetMapping("genre/{genreId}")
-    public ResponseEntity<ResponseDTO> getGenre(@PathVariable("genreId") Long genreId) {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            GenreDTO dto = genreService.getGenreById(genreId);
-            response.setData(dto);
-            response.setSuccessCode("GET GENRE SUCCESSFULLY");
-        } catch (Exception e) {
-            throw new DataNotFoundException("GENRE NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public  GenreDTO getGenre(@PathVariable("genreId") Long genreId) {
+        return genreService.getGenreById(genreId);
     }
 
     @PostMapping(value = "/genre/create", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> createNewGenre(@RequestBody GenreDTO genreDTO) throws CreateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
+    public void createNewGenre(@RequestBody GenreDTO genreDTO){
             genreService.createGenre(genreDTO);
-            response.setSuccessCode("CREATE GENRE SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new CreateDataFailException("SOMETHING WENT WRONG DURING createGenre");
-        }
-        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping(value = "/genre/update", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> updateGenre(@RequestBody GenreDTO genreDTO) throws UpdateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            GenreDTO dto = genreService.updateGenre(genreDTO);
-            response.setData(dto);
-            response.setSuccessCode("UPDATE GENRE SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new UpdateDataFailException("Something went wrong with updateGenre");
-        }
-        return ResponseEntity.ok().body(response);
+    public GenreDTO updateGenre(@RequestBody GenreDTO genreDTO){
+        return genreService.updateGenre(genreDTO);
     }
 
     @DeleteMapping("/genre/delete/{genreId}")
-    public ResponseEntity<ResponseDTO> deleteGenre(@PathVariable("genreId") Long genreId) throws DeleteDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            genreService.deleteGenre(genreId);
-            response.setSuccessCode("DELETE GENRE SUCCESSFULLY");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DeleteDataFailException("Something went wrong with deleteGenrre");
-        }
-        return ResponseEntity.ok().body(response);
+    public void deleteGenre(@PathVariable("genreId") Long genreId) throws DeleteDataFailException {
+        genreService.deleteGenre(genreId);
     }
+
 
 }

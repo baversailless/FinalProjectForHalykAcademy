@@ -24,7 +24,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private UserMapper userMapper;
-    private BCryptPasswordEncoder encoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -37,12 +36,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getUsers() {
         List<UserDTO> list;
-        try {
-            List<User> userList = userRepository.findAll();
-            list = userMapper.toUserDTOList(userList);
-        } catch (Exception e){
-            throw new DataNotFoundException("Users not found");
+        List<User> userList = userRepository.findAll();
+        if (userList.isEmpty()){
+            throw new DataNotFoundException("THERE ARE NO USERS");
         }
+        list = userMapper.toUserDTOList(userList);
         return list;
     }
 
@@ -60,23 +58,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(UserDTO userDTO) {
-        try {
-            User user = userMapper.toEntity(userDTO);
-            user.setPassword(encoder.encode(userDTO.getPassword()));
-            userRepository.saveAndFlush(user);
-        } catch (Exception e) {
-            throw new CreateDataFailException("Something went wrong during createUser");
-        }
+        User user = userMapper.toEntity(userDTO);
+        userRepository.saveAndFlush(user);
     }
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
-        try {
-            User user = userMapper.toEntity(userDTO);
-            userRepository.saveAndFlush(user);
-        } catch (Exception e) {
-            throw new UpdateDataFailException("Something went wrong with updateUser");
+        if(userDTO.getId() == null){
+            throw new UpdateDataFailException("YOU NEED TE SPECIFY USER ID");
         }
+
+        User found = userRepository.findById(userDTO.getId()).orElse(null);
+        if(found == null){
+            throw new UpdateDataFailException("THERE IS NO USER WITH THIS ID");
+        }
+        User user = userMapper.toEntity(userDTO);
+        userRepository.saveAndFlush(user);
         return userDTO;
     }
 
@@ -84,7 +81,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = userRepository.findById(id).orElse(null);
         if(user == null){
-            throw new DataNotFoundException("There is no user by this id");
+            throw new DataNotFoundException("There is no user WITH this id");
         }
         userRepository.deleteById(id);
     }

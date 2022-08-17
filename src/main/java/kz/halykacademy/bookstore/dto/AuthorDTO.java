@@ -21,6 +21,8 @@ public class AuthorDTO {
     private String firstName;
     private String patronymicName;
     private String dateOfBirth;
+    private List<String> bookNames;
+    private Set<String> genreNames;
     private List<Long> bookList;
     private Set<Long> genreList;
 

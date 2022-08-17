@@ -9,7 +9,7 @@ import kz.halykacademy.bookstore.mapper.OrderMapper;
 import kz.halykacademy.bookstore.repository.BookRepository;
 import kz.halykacademy.bookstore.repository.OrderRepository;
 import kz.halykacademy.bookstore.repository.UserRepository;
-import kz.halykacademy.bookstore.security.details.UserDetailsImpl;
+import kz.halykacademy.bookstore.security.UserDetailsImpl;
 import kz.halykacademy.bookstore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;

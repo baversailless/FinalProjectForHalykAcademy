@@ -20,33 +20,28 @@ public class UserController {
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<UserDTO>> getAllUsers(){
-        List<UserDTO> list = userService.getUsers();
-        return ResponseEntity.ok().body(list);
+    public List<UserDTO>  getAllUsers(){
+        return userService.getUsers();
     }
 
     @GetMapping(value = "/user/{userId}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("userId") Long userId){
-        UserDTO userDTO = userService.getUserById(userId);
-        return ResponseEntity.ok().body(userDTO);
+    public UserDTO getUserById(@PathVariable("userId") Long userId){
+        return userService.getUserById(userId);
     }
 
     @PostMapping(value = "/user/create")
-    public ResponseEntity createNewUser(@RequestBody UserDTO userDTO){
+    public void createNewUser(@RequestBody UserDTO userDTO){
         userService.createUser(userDTO);
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/user/update")
-    public ResponseEntity updateUser(@RequestBody UserDTO userDTO){
+    public void updateUser(@RequestBody UserDTO userDTO){
         userService.updateUser(userDTO);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/user/delete/{userId}")
-    public ResponseEntity deleteUserById(@PathVariable("userId") Long userId){
+    public void deleteUserById(@PathVariable("userId") Long userId){
         userService.deleteUser(userId);
-        return ResponseEntity.ok().build();
     }
 
 }

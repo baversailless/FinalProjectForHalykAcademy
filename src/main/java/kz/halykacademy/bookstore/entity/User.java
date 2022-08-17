@@ -29,7 +29,6 @@ public class User {
     private boolean isBlocked;
 
     @OneToMany(mappedBy = "user")
-    //@Column(name = "order_list")
     private List<Order> orderList;
 
 

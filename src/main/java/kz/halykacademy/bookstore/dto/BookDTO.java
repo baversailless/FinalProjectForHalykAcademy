@@ -21,14 +21,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BookDTO {
     private Long id;
     private int price;
-    private List<Long> authorsId;
-    private List<Long> genresId;
-    private List<String> authorNames;
-    private List<String> GenreNames;
-    private Long publisherId;
     private String title;
     private int numberOfPages;
     private int releaseYear;
+    private List<String> authorNames;
+    private List<String> GenreNames;
+    private Long publisherId;
+    private List<Long> authorsId;
+    private List<Long> genresId;
+
+
 
 
 

@@ -1,9 +1,6 @@
 package kz.halykacademy.bookstore.controller;
 
-import kz.halykacademy.bookstore.dto.OrderCreateDTO;
 import kz.halykacademy.bookstore.dto.OrderDTO;
-import kz.halykacademy.bookstore.dto.UserDTO;
-import kz.halykacademy.bookstore.entity.Order;
 import kz.halykacademy.bookstore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,32 +19,27 @@ public class OrderController {
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<OrderDTO>> getAllOrders(){
-        List<OrderDTO> list = orderService.getOrderList();
-        return ResponseEntity.ok().body(list);
+    public List<OrderDTO> getAllOrders(){
+        return orderService.getOrderList();
     }
     @GetMapping(value = "/order/{orderId}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable("orderId") Long orderId){
-        OrderDTO orderDTO = orderService.getOrderById(orderId);
-        return ResponseEntity.ok().body(orderDTO);
+    public OrderDTO getOrderById(@PathVariable("orderId") Long orderId){
+        return orderService.getOrderById(orderId);
     }
 
     @PostMapping(value = "/order/create")
-    public ResponseEntity createNewOrder(@RequestBody OrderCreateDTO orderDTO){
+    public void createNewOrder(@RequestBody OrderDTO orderDTO){
         orderService.createOrder(orderDTO);
-        return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/order/update")
-    public ResponseEntity updateOrder(@RequestBody OrderDTO orderDTO){
+    public void updateOrder(@RequestBody OrderDTO orderDTO){
         orderService.updateOrder(orderDTO);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/order/delete/{orderId}")
-    public ResponseEntity deleteOrderById(@PathVariable("orderId") Long orderId){
+    public void deleteOrderById(@PathVariable("orderId") Long orderId){
         orderService.deleteOrder(orderId);
-        return ResponseEntity.ok().build();
     }
 
 }

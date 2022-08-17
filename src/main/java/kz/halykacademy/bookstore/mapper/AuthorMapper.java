@@ -38,6 +38,8 @@ public class AuthorMapper {
         dto.setFirstName(author.getFirstName());
         dto.setLastName(author.getLastName());
         dto.setPatronymicName(author.getPatronymicName());
+        dto.setBookNames(author.getBookList().stream().map(Book::getTitle).collect(Collectors.toList()));
+        dto.setGenreNames(author.getGenreList().stream().map(Genre::getName).collect(Collectors.toSet()));
         dto.setBookList(author.getBookList().stream().map(Book::getId).collect(Collectors.toList()));
         dto.setGenreList(author.getGenreList().stream().map(Genre::getId).collect(Collectors.toSet()));
         return dto;
