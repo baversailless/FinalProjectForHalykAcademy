@@ -1,12 +1,7 @@
 package kz.halykacademy.bookstore.service.impl;
 
-import kz.halykacademy.bookstore.dto.BookDTO;
-import kz.halykacademy.bookstore.dto.OrderCreateDTO;
 import kz.halykacademy.bookstore.dto.OrderDTO;
-import kz.halykacademy.bookstore.dto.UserDTO;
-import kz.halykacademy.bookstore.entity.Book;
-import kz.halykacademy.bookstore.entity.Order;
-import kz.halykacademy.bookstore.entity.User;
+import kz.halykacademy.bookstore.entity.*;
 import kz.halykacademy.bookstore.exception.CreateDataFailException;
 import kz.halykacademy.bookstore.exception.DataNotFoundException;
 import kz.halykacademy.bookstore.exception.UpdateDataFailException;
@@ -14,13 +9,14 @@ import kz.halykacademy.bookstore.mapper.OrderMapper;
 import kz.halykacademy.bookstore.repository.BookRepository;
 import kz.halykacademy.bookstore.repository.OrderRepository;
 import kz.halykacademy.bookstore.repository.UserRepository;
+import kz.halykacademy.bookstore.security.details.UserDetailsImpl;
 import kz.halykacademy.bookstore.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -65,6 +61,8 @@ public class OrderServiceImpl implements OrderService {
         return dto;
     }
 
+
+
    /* @Override
     public void createOrder(OrderDTO orderDTO) throws CreateDataFailException {
         try {
@@ -75,46 +73,92 @@ public class OrderServiceImpl implements OrderService {
         }
     }*/
 
-    public void createOrder(OrderCreateDTO orderDTO) {
-        List<Book> books = bookRepository.findAllById(orderDTO.getOrderedBooksIds());
-        User user = userRepository.findById(orderDTO.getUserId()).orElse(null);
-        Order order = orderDTO.convertOrderCreateDtoToEntity(books, user);
-        orderRepository.save(order);
+    public boolean checkPriceLimit(List<Book> books){
+        int totalPrice = 0;
+        for (Book i : books) {
+            totalPrice = i.getPrice() + totalPrice;
+        }
+        return (totalPrice < 10000);
 
     }
 
-
-  /*  @Override
-    public OrderDTO updateOrder(OrderDTO orderDTO) throws UpdateDataFailException {
-        try {
-            Order order = orderMapper.toEntity(orderDTO);
-            order.setCreationDate(LocalDateTime.now());
-            order.getOrderStatus()
-            orderRepository.saveAndFlush(order);
-        } catch (Exception e) {
-            throw new UpdateDataFailException("Something went wrong with updateOrder");
+    public void checkPresence(OrderDTO orderDTO){
+        List<Long> bookIds = orderDTO.getBookIds();
+        for(Long i:bookIds) {
+            Book book = bookRepository.findById(i).orElse(null);
+            if (book == null) {
+                throw new CreateDataFailException("THERE IS NO BOOK BY THIS ID: " + i);
+            }
         }
-        return orderDTO;
-    }*/
+    }
+
+    public void createOrder(OrderDTO orderDTO) throws CreateDataFailException {
+        UserDetailsImpl userDetails= (UserDetailsImpl)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow();
+        /*if (!username.equals(user.getUsername())) {
+            throw new CreateDataFailException("YOU CAN CREATE ORDER ONLY FOR YOU");
+        }*/
+        if (!userDetails.isAccountNonLocked()) throw new CreateDataFailException("BLOCKED USER CANNOT CREATE AN ORDER");
+        List<Book> books = bookRepository.findAllById(orderDTO.getBookIds());
+        checkPresence(orderDTO);
+        if (!checkPriceLimit(books)) throw new CreateDataFailException("PRICE CANNOT EXCEED 10000");
+        Order order = new Order();
+        order.setId(orderDTO.getId());
+        order.setUser(user);
+        order.setBookList(books);
+        order.setCreationDate(LocalDateTime.now());
+        order.setOrderStatus(OrderStatus.CREATED);
+        orderRepository.save(order);
+    }
 
     @Override
     public OrderDTO updateOrder(OrderDTO orderDTO) throws UpdateDataFailException {
-        try {
-            Order order = new Order();
-            order.setId(order.getId());
-            order.setBookList(bookRepository.findAllById(orderDTO.getBookIds()));
-            order.setOrderStatus(orderDTO.getOrderStatus());
-            Optional<User> user = userRepository.findById(orderDTO.getId());
-            if (user.isPresent()) {
-                order.setUser(user.get());
-            }
-            orderRepository.saveAndFlush(order);
-            return orderDTO;
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow();
 
-        } catch (Exception e) {
-            throw new UpdateDataFailException("Something went wrong with updateOrder");
+        if (orderDTO.getId() == null) {
+            throw new UpdateDataFailException("YOU NEED THE SPECIFY ID OF YOUR ORDER");
         }
+
+        Order order = orderRepository.findById(orderDTO.getId()).orElse(null);
+        if (user.getRole().equals(Role.USER)){
+            if (user != order.getUser()){
+                throw new UpdateDataFailException("YOU CAN UPDATE ONLY YOUR ORDERS");
+            }
+        }
+
+        //if (!userDetails.isAccountNonLocked()) throw new CreateDataFailException("BLOCKED USER CANNOT CREATE AN ORDER");
+
+        List<Book> books = bookRepository.findAllById(orderDTO.getBookIds());
+        checkPresence(orderDTO);
+        if (!checkPriceLimit(books)) {
+            throw new CreateDataFailException("PRICE CANNOT EXCEED 10000");
+        }
+        order.setUser(user);
+
+        if (user.getRole().equals(Role.USER)){
+            if (!order.getOrderStatus().equals(orderDTO.getOrderStatus())){
+                throw new UpdateDataFailException("USERS CANNOT UPDATE ORDER STATUS");
+            }
+        }
+
+        if (user.getRole().equals(Role.ADMIN)){
+            if (!order.getBookList().equals(books)){
+                throw new UpdateDataFailException("ADMIN CANNOT UPDATE USERS BOOK LIST");
+            }
+        }
+
+        order.setBookList(books);
+        order.setOrderStatus(orderDTO.getOrderStatus());
+        orderRepository.save(order);
+        return orderMapper.toDTO(order);
+
     }
+
+
+
 
     @Override
     public void deleteOrder(Long id) {
