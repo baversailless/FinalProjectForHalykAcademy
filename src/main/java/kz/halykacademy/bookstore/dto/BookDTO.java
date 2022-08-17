@@ -1,5 +1,6 @@
 package kz.halykacademy.bookstore.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kz.halykacademy.bookstore.entity.Author;
 import kz.halykacademy.bookstore.entity.Book;
 import kz.halykacademy.bookstore.entity.Genre;
@@ -22,6 +23,8 @@ public class BookDTO {
     private int price;
     private List<Long> authorsId;
     private List<Long> genresId;
+    private List<String> authorNames;
+    private List<String> GenreNames;
     private Long publisherId;
     private String title;
     private int numberOfPages;

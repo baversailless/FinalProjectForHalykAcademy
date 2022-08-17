@@ -36,7 +36,9 @@ public class BookMapper {
         dto.setId(book.getId());
         dto.setPrice(book.getPrice());
         dto.setAuthorsId(book.getAuthorList().stream().map(Author::getId).collect(Collectors.toList()));
+        dto.setAuthorNames(book.getAuthorList().stream().map(Author::getLastName).collect(Collectors.toList()));
         dto.setGenresId(book.getGenreList().stream().map(Genre::getId).collect(Collectors.toList()));
+        dto.setGenreNames(book.getGenreList().stream().map(Genre::getName).collect(Collectors.toList()));
         dto.setPublisherId(book.getPublisher().getId());
         dto.setTitle(book.getTitle());
         dto.setNumberOfPages(book.getNumberOfPages());

@@ -39,66 +39,57 @@ public class BookServiceImpl implements BookService{
     @Override
     public List<BookDTO> findByTitle(String name) {
         List<BookDTO> listDTO;
-        try {
-            List<Book> bookList = bookRepository.findByTitleLikeIgnoreCase(name.toLowerCase());
-            listDTO = bookMapper.toBookDTOList(bookList);
-        } catch (Exception e){
-            throw new DataNotFoundException("Something went wrong with findByTitle");
+        List<Book> bookList = bookRepository.findByTitleLikeIgnoreCase(name.toLowerCase());
+        if (bookList.isEmpty()){
+            throw new DataNotFoundException("NOT FOUND");
         }
+        listDTO = bookMapper.toBookDTOList(bookList);
         return listDTO;
     }
 
    @Override
     public List<BookDTO> getBookListToShow() {
        List<BookDTO> listDTO;
-        try {
-            List<Book> book = bookRepository.getAllBooks();
-            listDTO = bookMapper.toBookDTOList(book);
-        } catch (Exception e) {
-            throw new DataNotFoundException("Something went wrong with Book List");
-        }
-        return listDTO;
-
+       List<Book> books = bookRepository.getAllBooks();
+       if (books.isEmpty()){
+           throw new DataNotFoundException("THERE ARE NO BOOKS");
+       }
+       listDTO = bookMapper.toBookDTOList(books);
+       return listDTO;
     }
 
     @Override
     public BookDTO getBookById(Long id) {
         BookDTO dto;
-        try {
-            Book book = bookRepository.findById(id).orElse(null);
-            if (book == null) {
-                throw new DataNotFoundException("There is no book by this id");
-            } else {
-                dto = bookMapper.toDTO(book);
-            }
-        } catch (Exception e){
-            throw new DataNotFoundException("Something went wrong with Book");
+        Book book = bookRepository.findById(id).orElse(null);
+        if (book == null){
+            throw new DataNotFoundException("THERE IS NO BOOK BY THIS ID");
         }
+        dto = bookMapper.toDTO(book);
         return dto;
     }
 
     @Override
     public void createBook(BookDTO bookDTO) throws CreateDataFailException {
-            try {
-                Book book = bookMapper.toEntity(bookDTO);
-                Book temp = bookRepository.checkExistedBook(book.getTitle(), book.getPublisher().getId(), book.getNumberOfPages(), book.getReleaseYear());
-                if (temp != null){
-                    throw new CreateDataFailException("BOOK ALREADY EXISTS");
-                }
-                bookRepository.saveAndFlush(book);
-            } catch (Exception e) {
-                throw new CreateDataFailException("Something went wrong during createBook");
-            }
+        Book book = bookMapper.toEntity(bookDTO);
+        Book temp = bookRepository.checkExistedBook(book.getTitle(), book.getPublisher().getId(), book.getNumberOfPages(), book.getReleaseYear());
+        if (temp != null) {
+            throw new CreateDataFailException("BOOK ALREADY EXISTS");
+        }
+        bookRepository.saveAndFlush(book);
     }
 
     @Override
     public BookDTO updateBook(BookDTO bookDTO) throws UpdateDataFailException {
-        try {
+            if (bookDTO.getId() == null) {
+                throw new UpdateDataFailException("YOU NEED TE SPECIFY BOOK ID");
+            }
+            Book found = bookRepository.findById(bookDTO.getId()).orElse(null);
+            if (found == null){
+                throw new UpdateDataFailException("THERE IS NO BOOK BY THIS ID");
+            }
             Book book = bookMapper.toEntity(bookDTO);
             bookRepository.saveAndFlush(book);
-        } catch (Exception e) {
-            throw new UpdateDataFailException("Something went wrong with updateBook");
-        }
         return bookDTO;
     }
 
@@ -106,7 +97,7 @@ public class BookServiceImpl implements BookService{
     public void deleteBook(Long id) {
         Book book = bookRepository.findById(id).orElse(null);
         if(book == null){
-            throw new DataNotFoundException("There is no book by this id");
+            throw new DataNotFoundException("THERE IS NO BOOK BY THIS ID");
         }
         bookRepository.deleteById(id);
     }
