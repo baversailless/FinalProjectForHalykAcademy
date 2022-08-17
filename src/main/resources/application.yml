@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/bookstore
     username: postgres
-    password: Sa!b!i!na27
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: none
