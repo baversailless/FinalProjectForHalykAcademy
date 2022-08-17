@@ -2,14 +2,11 @@ package kz.halykacademy.bookstore.mapper;
 import kz.halykacademy.bookstore.dto.OrderDTO;
 import kz.halykacademy.bookstore.entity.Book;
 import kz.halykacademy.bookstore.entity.Order;
-import kz.halykacademy.bookstore.entity.OrderStatus;
 import kz.halykacademy.bookstore.repository.BookRepository;
 import kz.halykacademy.bookstore.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,15 +33,6 @@ public class OrderMapper {
         return dto;
     }
 
-    public Order toEntity(OrderDTO orderDTO){
-        Order order = new Order();
-        order.setId(orderDTO.getId());
-        order.setBookList(bookRepository.findAllById(orderDTO.getBookIds()));
-        order.setOrderStatus(orderDTO.getOrderStatus());
-        order.setUser(userRepository.findById(orderDTO.getId()).orElse(null));
-        order.setCreationDate(orderDTO.getCreationDate());
-        return order;
-    }
 
     public List<OrderDTO> toOrderDTOList(List<Order> orders){
         List<OrderDTO> dtoList = orders.stream().map(order -> toDTO(order)).collect(Collectors.toList());
