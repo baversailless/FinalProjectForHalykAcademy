@@ -20,7 +20,6 @@ import java.util.List;
 public class BookController {
     private final BookService bookService;
 
-
     @Autowired
     public BookController(BookService bookService){
         this.bookService = bookService;
@@ -28,87 +27,33 @@ public class BookController {
 
 
     @GetMapping(value = "/findByTitle/{title}")
-    public ResponseEntity<ResponseDTO> findByTitle(@PathVariable("title") String name){
-        ResponseDTO response = new ResponseDTO();
-        try {
-            List<BookDTO> listDTO = bookService.findByTitle(name);
-            response.setData(listDTO);
-            response.setSuccessCode("GET ALL BOOKS SUCCESS");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DataNotFoundException("BOOKS NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public List<BookDTO> findByTitle(@PathVariable("title") String name) {
+        return bookService.findByTitle(name);
     }
 
     @GetMapping(value = "/all")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<ResponseDTO> getAllBook() {
-        ResponseDTO response = new ResponseDTO();
-        try {
-             List<BookDTO> listDTO = bookService.getBookListToShow();
-             response.setData(listDTO);
-             response.setSuccessCode("GET ALL BOOKS SUCCESS");
-        } catch (Exception e) {
-            response.setErrorCode("FAIL");
-            throw new DataNotFoundException("BOOKS NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
-
-    }
-
-    @PostMapping(value = "/book/create", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> createNewBook(@RequestBody BookDTO bookDTO) throws CreateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            bookService.createBook(bookDTO);
-            response.setSuccessCode("Success");
-        } catch (Exception e) {
-            response.setErrorCode("Fail");
-            throw new CreateDataFailException("SOMETHING WENT WRONG DURING createBook");
-        }
-        return ResponseEntity.ok().body(response);
+    public List<BookDTO> getAllBook() {
+        return bookService.getBookListToShow();
     }
 
     @GetMapping("/book/{bookId}")
-    public ResponseEntity<ResponseDTO> getBook(@PathVariable("bookId") Long bookId) {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            BookDTO dto = bookService.getBookById(bookId);
-            response.setData(dto);
-            response.setSuccessCode("Success");
-        } catch (Exception e) {
-            throw new DataNotFoundException("BOOK NOT FOUND");
-        }
-        return ResponseEntity.ok().body(response);
+    public BookDTO getBook(@PathVariable("bookId") Long bookId) {
+        return bookService.getBookById(bookId);
     }
 
+    @PostMapping(value = "/book/create", consumes = "application/json")
+    public void createNewBook(@RequestBody BookDTO bookDTO) {
+        bookService.createBook(bookDTO);
+    }
 
     @PutMapping(value = "/book/update", consumes = "application/json")
-    public ResponseEntity<ResponseDTO> updateBook(@RequestBody BookDTO bookDTO) throws UpdateDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            BookDTO dto =  bookService.updateBook(bookDTO);
-            response.setData(dto);
-            response.setSuccessCode("Success");
-        } catch (Exception e) {
-            response.setErrorCode("Fail");
-            throw new UpdateDataFailException("Something went wrong with updateBook");
-        }
-        return ResponseEntity.ok().body(response);
+    public BookDTO updateBook(@RequestBody BookDTO bookDTO){
+        return bookService.updateBook(bookDTO);
     }
 
     @DeleteMapping("/book/delete/{bookId}")
-    public ResponseEntity<ResponseDTO> deleteBook(@PathVariable("bookId") Long bookId) throws DeleteDataFailException {
-        ResponseDTO response = new ResponseDTO();
-        try {
-            bookService.deleteBook(bookId);
-            response.setSuccessCode("Success");
-        } catch (Exception e) {
-            response.setErrorCode("Fail");
-            throw new DeleteDataFailException("Something went wrong with deleteBook");
-        }
-        return ResponseEntity.ok().body(response);
+    public void deleteBook(@PathVariable("bookId") Long bookId) {
+        bookService.deleteBook(bookId);
     }
 
 
